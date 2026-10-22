@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Groq Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ══════════ AUTH SCREEN ══════════ -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <span class="logo">⚡</span>
+        <h1>Groq Chat</h1>
+        <p class="muted">Fast AI conversations powered by Groq</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Sign in</button>
+        <button class="auth-tab" data-tab="register">Create account</button>
+      </div>
+
+      <!-- Login form -->
+      <form id="login-form" class="auth-form">
+        <label>
+          Username or email
+          <input type="text" id="login-user" required autocomplete="username" placeholder="you@example.com" />
+        </label>
+        <label>
+          Password
+          <input type="password" id="login-pass" required autocomplete="current-password" placeholder="••••••••" />
+        </label>
+        <p class="auth-error" id="login-error" hidden></p>
+        <button type="submit" class="btn-primary auth-submit">Sign in</button>
+      </form>
+
+      <!-- Register form -->
+      <form id="register-form" class="auth-form" hidden>
+        <label>
+          Username
+          <input type="text" id="reg-user" required minlength="3" maxlength="32" pattern="[a-zA-Z0-9_]+" autocomplete="username" placeholder="johndoe" />
+        </label>
+        <label>
+          Email
+          <input type="email" id="reg-email" required autocomplete="email" placeholder="you@example.com" />
+        </label>
+        <label>
+          Password
+          <input type="password" id="reg-pass" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters" />
+        </label>
+        <p class="auth-error" id="reg-error" hidden></p>
+        <button type="submit" class="btn-primary auth-submit">Create account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════════ APP ══════════ -->
+  <div class="app" id="app" hidden>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="logo">⚡</span>
+        <span>Groq Chat</span>
+      </div>
+      <button class="new-chat" id="new-chat">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        New chat
+      </button>
+      <div class="conv-label">History</div>
+      <nav class="conv-list" id="conv-list"></nav>
+
+      <div class="sidebar-footer">
+        <div class="user-chip" id="user-chip">
+          <span class="avatar" id="user-avatar">U</span>
+          <span class="user-name" id="user-name">User</span>
+        </div>
+        <button class="settings-btn" id="settings-btn" title="Settings">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        </button>
+        <button class="logout-btn" id="logout-btn" title="Sign out">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menu-btn" aria-label="Open history">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <h1 class="chat-title" id="chat-title">New chat</h1>
+        <select id="model" class="model-select" aria-label="Model"></select>
+      </header>
+
+      <div class="banner" id="key-warning" hidden>
+        No Groq API key found. Add <code>GROQ_API_KEY</code> to your <code>.env</code> file and restart the server.
+      </div>
+
+      <section class="chat" id="chat">
+        <div class="empty" id="empty">
+          <div class="empty-logo">⚡</div>
+          <h2>What can I help with?</h2>
+          <p class="muted">Free, very fast AI powered by Groq. Try voice input with the mic button.</p>
+          <div class="chips">
+            <button class="chip" data-prompt="Explain how RAG (retrieval-augmented generation) works, simply.">Explain RAG simply</button>
+            <button class="chip" data-prompt="Write a Python function to check if a string is a palindrome, with tests.">Python palindrome + tests</button>
+            <button class="chip" data-prompt="Give me a 7-day study plan to learn FastAPI.">7-day FastAPI plan</button>
+            <button class="chip" data-prompt="What's the difference between a process and a thread?">Process vs thread</button>
+          </div>
+        </div>
+        <div class="messages" id="messages"></div>
+      </section>
+
+      <form class="composer" id="composer">
+        <div class="composer-box">
+          <button type="button" class="mic-btn" id="mic-btn" title="Voice input" aria-label="Voice input">
+            <svg class="mic-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+            </svg>
+            <span class="mic-pulse"></span>
+          </button>
+          <textarea id="input" rows="1" placeholder="Message Groq Chat…  (Shift+Enter for new line)" autocomplete="off"></textarea>
+          <button type="button" class="tts-btn" id="tts-btn" title="Read last reply aloud" aria-label="Text to speech" hidden>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            </svg>
+          </button>
+          <button type="submit" class="send" id="send" aria-label="Send">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="send stop" id="stop" aria-label="Stop" hidden>
+            <svg viewBox="0 0 24 24" width="14" height="14"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <p class="hint">AI can make mistakes. Check important info. · Voice uses your browser’s speech recognition</p>
+      </form>
+    </main>
+  </div>
+
+  <!-- Settings dialog -->
+  <dialog id="settings" class="dialog">
+    <form method="dialog">
+      <h3>Settings</h3>
+      <label for="system-prompt">System prompt <span class="muted">(the bot’s personality)</span></label>
+      <textarea id="system-prompt" rows="5" placeholder="Leave empty to use the default helpful-assistant prompt."></textarea>
+      <label for="temperature">Temperature: <strong id="temp-val">0.7</strong> <span class="muted">(higher = more creative)</span></label>
+      <input type="range" id="temperature" min="0" max="1.5" step="0.1" value="0.7" />
+      <label class="toggle-row">
+        <span>Auto-read replies aloud</span>
+        <input type="checkbox" id="auto-tts" />
+      </label>
+      <div class="dialog-actions">
+        <button class="btn" value="close">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
